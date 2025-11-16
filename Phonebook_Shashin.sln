@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phonebook_Shashin", "Phoneb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassModule", "..\ClassModule\ClassModule.csproj", "{ACD74BEE-AB2A-4FD8-8211-847FB0A265C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassConnection", "..\ClassConnection\ClassConnection.csproj", "{B7AC5E8A-C520-4829-811C-807A19DCAAB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{ACD74BEE-AB2A-4FD8-8211-847FB0A265C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACD74BEE-AB2A-4FD8-8211-847FB0A265C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACD74BEE-AB2A-4FD8-8211-847FB0A265C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7AC5E8A-C520-4829-811C-807A19DCAAB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7AC5E8A-C520-4829-811C-807A19DCAAB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7AC5E8A-C520-4829-811C-807A19DCAAB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7AC5E8A-C520-4829-811C-807A19DCAAB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
