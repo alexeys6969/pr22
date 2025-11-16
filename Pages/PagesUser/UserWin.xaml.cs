@@ -64,7 +64,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
                 {
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
                     MessageBox.Show("Успешное добавление клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
-                    MainWindow.main.Anim_move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
+                    MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
                 } else
                 {
                     MessageBox.Show("Запрос на добавление клиента не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -77,7 +77,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
                 {
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
                     MessageBox.Show("Успешное изменение клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
-                    MainWindow.main.Anim_move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
+                    MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
                 }
                 else
                 {

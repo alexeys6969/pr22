@@ -54,7 +54,7 @@ namespace Phonebook_Shashin.Elements
                 Call userFind = MainWindow.connect.calls.Find(x => x.user_id == user_loc.id);
                 if(userFind != null)
                 {
-                    var click = MessageBox.Show("У данного клиента есть звонки, все равно удалить его?", "Вопрос", MessageBoxButton.YesNo, , MessageBoxImage.Information);
+                    var click = MessageBox.Show("У данного клиента есть звонки, все равно удалить его?", "Вопрос", MessageBoxButton.YesNo, MessageBoxImage.Information);
                     if (click == MessageBoxResult.No) return;
                 }
 

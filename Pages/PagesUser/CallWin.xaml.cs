@@ -150,24 +150,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
 
         private void Click_Cancel_Call_Redact(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
-                string vs = "DELETE FROM [calls] WHERE [Код] = " + call_itm.id.ToString() + "";
-                var pc = MainWindow.connect.QueryAccess(vs);
-                if (pc != null)
-                {
-                    MessageBox.Show("Успешное удаление звонка", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
-                    MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
-                    MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.calls);
-                }
-                else MessageBox.Show("Запрос на удаление звонка не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message.ToString());
-            }
+            MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main);
         }
 
         public bool CheckTime(string str)
@@ -190,6 +173,28 @@ namespace Phonebook_Shashin.Pages.PagesUser
                 else return false;
             }
             else return false;
+        }
+
+        private void Click_Remove_Call_Redact(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
+                string vs = "DELETE FROM [calls] WHERE [Код] = " + call_itm.id.ToString() + "";
+                var pc = MainWindow.connect.QueryAccess(vs);
+                if (pc != null)
+                {
+                    MessageBox.Show("Успешное удаление звонка", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
+                    MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.calls);
+                }
+                else MessageBox.Show("Запрос на удаление звонка не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString());
+            }
         }
     }
 }

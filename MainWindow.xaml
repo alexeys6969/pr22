@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="PhoneBook" Height="550" Width="800" MinHeight="550" MinWidth="800">
     <Grid>
-        <Frame x:Name="frame" Opacity="0" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="frame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

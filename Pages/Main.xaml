@@ -49,7 +49,7 @@
             </Border.Background>
             <Grid MinHeight="300">
                 <ScrollViewer x:Name="scroll_main">
-                    <StackPanel x:Name="">
+                    <StackPanel x:Name="parrent">
                         
                     </StackPanel>
                 </ScrollViewer>
