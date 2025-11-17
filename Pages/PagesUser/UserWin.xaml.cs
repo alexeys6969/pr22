@@ -26,7 +26,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
         {
             InitializeComponent();
             user_loc = _user;
-            if(_user.fio_user != null)
+            if (_user != null && _user.fio_user != null)
             {
                 fio_user.Text = _user.fio_user;
                 phone_user.Text = _user.phone_num;
@@ -54,7 +54,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
                 return;
             }
 
-            if(user_loc.fio_user == null)
+            if(user_loc == null || user_loc.fio_user == null)
             {
                 int id = MainWindow.connect.SetLastId(ClassConnection.Connection.tabels.users);
                 string query = $"INSERT INTO [users]([Код], [phone_num], [fio_user], [pasport_data]) VALUES ({id.ToString()}, " + $"'{phone_user.Text}', '{fio_user.Text}','{addrec_user.Text}')";
@@ -71,10 +71,11 @@ namespace Phonebook_Shashin.Pages.PagesUser
                 }
             } else
             {
-                string query = $"UPDATE [users] set [phone_num] = '{phone_user.Text}', " + $"[fio_user]='{fio_user.Text}', " + $"[pasport_data]='{addrec_user.Text}' WHERE Код = {user_loc.id}";
+                string query = $"UPDATE [users] SET [phone_num] = '{phone_user.Text}', [fio_user] = '{fio_user.Text}', [pasport_data] = '{addrec_user.Text}' WHERE [Код] = {user_loc.id}";
                 var pc = MainWindow.connect.QueryAccess(query);
                 if (pc != null)
                 {
+                    MainWindow.connect.users.Clear();
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
                     MessageBox.Show("Успешное изменение клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
                     MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
@@ -91,6 +92,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
         {
             try
             {
+                MainWindow.connect.users.Clear();
                 MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
                 Call userFind = MainWindow.connect.calls.Find(x => x.user_id == user_loc.id);
                 if(userFind != null)
@@ -102,14 +104,15 @@ namespace Phonebook_Shashin.Pages.PagesUser
                     }
                 }
 
-                string vs1 = $"DELETE FROM [calls] WHERE [user_id] = '{user_loc.id.ToString()}'";
-                var pc1 = MainWindow.connect.QueryAccess(vs1);
+                string vs1 = $"DELETE FROM [calls] WHERE [user_id] = {user_loc.id}";
+                bool pc1 = MainWindow.connect.ExecuteNonQuery(vs1);
 
-                string vs = $"DELETE FROM [users] WHERE [Код] = " + user_loc.id.ToString() + "";
-                var pc = MainWindow.connect.QueryAccess(vs);
+                string vs = $"DELETE FROM [users] WHERE [Код] = {user_loc.id}";
+                bool pc = MainWindow.connect.ExecuteNonQuery(vs);
 
-                if(pc != null && pc1 != null)
+                if (pc && pc1)
                 {
+                    MainWindow.connect.users.Clear();
                     MessageBox.Show("Успешное удаление клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
                     MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);

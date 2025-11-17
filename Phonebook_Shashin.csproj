@@ -143,7 +143,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\ClassConnection\ClassConnection.csproj">
+      <Project>{e3aef2b8-4f9d-44f2-b81b-f8decbbd2521}</Project>
+      <Name>ClassConnection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClassModule\ClassModule.csproj">
+      <Project>{a45023af-8d34-4e61-9e16-88d536ea1f7e}</Project>
+      <Name>ClassModule</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="img\back.png" />
     <Resource Include="img\calendar.png" />
@@ -160,16 +169,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="logo.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ClassConnection\ClassConnection.csproj">
-      <Project>{b7ac5e8a-c520-4829-811c-807a19dcaab6}</Project>
-      <Name>ClassConnection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ClassModule\ClassModule.csproj">
-      <Project>{acd74bee-ab2a-4fd8-8211-847fb0a265c7}</Project>
-      <Name>ClassModule</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

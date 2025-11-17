@@ -27,10 +27,20 @@ namespace Phonebook_Shashin.Elements
         {
             InitializeComponent();
             call_loc = _call;
-            if(_call.time_end != null)
+
+            if (_call.time_end != null && _call.user_id > 0)
             {
                 User user_loc = MainWindow.connect.users.Find(x => x.id == _call.user_id);
-                category_call_text.Content = user_loc.fio_user.ToString();
+                if (user_loc != null)
+                {
+                    category_call_text.Content = user_loc.fio_user;
+                    number_call_text.Content = $"Номер телефона: {user_loc.phone_num}";
+                }
+                else
+                {
+                    category_call_text.Content = "Пользователь удален";
+                    number_call_text.Content = "Номер не доступен";
+                }
 
                 string[] dateloc1 = _call.time_start.ToString().Split(' ');
                 string[] dateloc2 = _call.time_end.ToString().Split(' ');
@@ -40,11 +50,11 @@ namespace Phonebook_Shashin.Elements
 
                 System.DateTime dateStart = new DateTime(
                     int.Parse(date1[2]),
-                    int.Parse(date1[1]), 
+                    int.Parse(date1[1]),
                     int.Parse(date1[0]),
                     int.Parse(dateloc1[1].Split(':')[0]),
                     int.Parse(dateloc1[1].Split(':')[1]),
-                    0 
+                    0
                 );
 
                 System.DateTime dateFinish = new DateTime(
@@ -58,7 +68,13 @@ namespace Phonebook_Shashin.Elements
                 System.TimeSpan dateEnd = dateFinish.Subtract(dateStart);
 
                 time_call_text.Content = $"Продолжительность звонка: {dateEnd.ToString()}";
-                number_call_text.Content = $"Номер телефона: {user_loc.phone_num.ToString()}";
+            }
+            else
+            {
+                MessageBox.Show("Некорректные данные звонка");
+                category_call_text.Content = "Нет данных";
+                number_call_text.Content = "Нет данных";
+                time_call_text.Content = "Нет данных";
             }
 
             img_category_call.Source =
@@ -83,9 +99,9 @@ namespace Phonebook_Shashin.Elements
             {
                 MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
 
-                string vs = "DELETE FROM [calls] WHERE [Код] = " + call_loc.id.ToString() + "";
+                string vs = $"DELETE FROM [calls] WHERE [Код] = {call_loc.id}";
                 var pc = MainWindow.connect.QueryAccess(vs);
-                if(pc != null)
+                if (pc != null)
                 {
                     MessageBox.Show("Успешное удаление звонка", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
@@ -93,7 +109,8 @@ namespace Phonebook_Shashin.Elements
                 }
                 else MessageBox.Show("Запрос на удаление звонка не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message.ToString());
             }

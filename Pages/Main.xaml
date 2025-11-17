@@ -49,11 +49,11 @@
             </Border.Background>
             <Grid MinHeight="300">
                 <ScrollViewer x:Name="scroll_main">
-                    <StackPanel x:Name="parrent">
+                    <StackPanel x:Name="parrent" Orientation="Vertical">
                         
                     </StackPanel>
                 </ScrollViewer>
-                <Frame x:Name="frame_main" NavigationUIVisibility="Hidden" Visibility="Hidden" Opacity="0"/> 
+                <Frame x:Name="frame_main" NavigationUIVisibility="Hidden" Visibility="Hidden" Opacity="0"/>
             </Grid>
         </Border>
     </Grid>

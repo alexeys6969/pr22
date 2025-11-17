@@ -71,7 +71,7 @@ namespace Phonebook_Shashin.Pages
 
                             if(page_select == page_main.users)
                             {
-                                var ff = new Pages.PagesUser.UserWin(new User());
+                                var ff = new Pages.PagesUser.UserWin(null);
                                 parrent.Children.Add(new Elements.Add_itm(ff));
                             }
                         });
@@ -90,6 +90,9 @@ namespace Phonebook_Shashin.Pages
             }
             if (page_select != page_main.calls)
             {
+                scroll_main.Visibility = Visibility.Visible;
+                scroll_main.Opacity = 1;
+
                 page_select = page_main.calls;
                 DoubleAnimation op = new DoubleAnimation();
                 op.From = 1;
@@ -107,22 +110,24 @@ namespace Phonebook_Shashin.Pages
 
                         Dispatcher.InvokeAsync(async () =>
                         {
+                            MainWindow.connect.calls.Clear();
                             MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
 
-                            foreach (Call call_itm in MainWindow.connect.calls)
+                            foreach (Call call_item in MainWindow.connect.calls)
                             {
                                 if (page_select == page_main.calls)
                                 {
-                                    parrent.Children.Add(new Elements.Call_itm(call_itm));
+                                    parrent.Children.Add(new Elements.Call_itm(call_item));
                                     await Task.Delay(90);
                                 }
                             }
 
                             if (page_select == page_main.calls)
                             {
-                                var ff = new Pages.PagesUser.CallWin(new Call());
+                                var ff = new Pages.PagesUser.CallWin(new ClassModule.Call());
                                 parrent.Children.Add(new Elements.Add_itm(ff));
                             }
+
                         });
                     };
                     parrent.BeginAnimation(StackPanel.OpacityProperty, op1);

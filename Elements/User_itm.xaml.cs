@@ -50,30 +50,33 @@ namespace Phonebook_Shashin.Elements
         {
             try
             {
-                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
-                Call userFind = MainWindow.connect.calls.Find(x => x.user_id == user_loc.id);
-                if(userFind != null)
-                {
-                    var click = MessageBox.Show("У данного клиента есть звонки, все равно удалить его?", "Вопрос", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                    if (click == MessageBoxResult.No) return;
-                }
+                // ТЕПЕРЬ ДОСТАТОЧНО УДАЛИТЬ ТОЛЬКО ПОЛЬЗОВАТЕЛЯ
+                // Звонки удалятся автоматически благодаря связи
+                string deleteUser = $"DELETE FROM [users] WHERE [Код] = {user_loc.id}";
+                bool success = MainWindow.connect.ExecuteNonQuery(deleteUser);
 
-                string vs1 = $"DELETE FROM [calls] WHERE [user_id] = '{user_loc.id.ToString()}'";
-                var pc1 = MainWindow.connect.QueryAccess(vs1);
-
-                string vs = "DELETE FROM [users] WHERE [Код] = " + user_loc.id.ToString() + "";
-                var pc = MainWindow.connect.QueryAccess(vs);
-                if(pc != null && pc1 != null)
+                if (success)
                 {
-                    MessageBox.Show("Успешное удаление клиента", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Клиент и все его звонки удалены", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // ОБНОВИ ДАННЫЕ
+                    MainWindow.connect.users.Clear();
+                    MainWindow.connect.calls.Clear();
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
-                    MainWindow.main.Anim_Move(MainWindow.main.scroll_main, MainWindow.main.frame_main, MainWindow.main.frame_main, new Pages.PagesUser.UserWin(user_loc));
-                }
-                else MessageBox.Show("Запрос на удаление клиента не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
 
-            } catch (Exception ex)
+                    // УДАЛИ ЭЛЕМЕНТ ИЗ ИНТЕРФЕЙСА
+                    var parent = this.Parent as StackPanel;
+                    parent?.Children.Remove(this);
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка при удалении клиента", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString());
+                MessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
     }
