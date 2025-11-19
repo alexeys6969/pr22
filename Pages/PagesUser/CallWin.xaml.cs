@@ -25,36 +25,19 @@ namespace Phonebook_Shashin.Pages.PagesUser
         public CallWin(Call _call)
         {
             InitializeComponent();
-            call_itm = _call;
-            if (_call != null && _call.time_start != null && _call.time_end != null)
-            {
-                try
-                {
-                    string[] dateTimeStart = _call.time_start.Split(' ');
-                    string[] dateStart = dateTimeStart[0].Split('.');
-                    date_start_call.SelectedDate = new DateTime(int.Parse(dateStart[2]), int.Parse(dateStart[1]), int.Parse(dateStart[0]));
-                    time_start.Text = dateTimeStart[1];
+            call_itm = _call ?? new Call();
 
-                    string[] dateTimeFinish = _call.time_end.Split(' ');
-                    string[] dateFinish = dateTimeFinish[0].Split('.');
-                    date_end_call.SelectedDate = new DateTime(int.Parse(dateFinish[2]), int.Parse(dateFinish[1]), int.Parse(dateFinish[0]));
-                    time_finish.Text = dateTimeFinish[1];
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка при загрузке данных звонка: " + ex.Message);
-                    // Устанавливаем значения по умолчанию
-                    date_start_call.SelectedDate = DateTime.Now;
-                    date_end_call.SelectedDate = DateTime.Now;
-                    time_start.Text = "00:00";
-                    time_finish.Text = "00:00";
-                }
+            // УСТАНАВЛИВАЕМ ФОРМАТ ДАТЫ ЕДИНООБРАЗНО
+            if (call_itm.StartDateTime.HasValue && call_itm.EndDateTime.HasValue)
+            {
+                date_start_call.SelectedDate = call_itm.StartDateTime.Value.Date;
+                time_start.Text = call_itm.StartDateTime.Value.ToString("HH:mm");
+
+                date_end_call.SelectedDate = call_itm.EndDateTime.Value.Date;
+                time_finish.Text = call_itm.EndDateTime.Value.ToString("HH:mm");
             }
             else
             {
-                // Значения по умолчанию для нового звонка
-                date_start_call.SelectedDate = DateTime.Now;
-                date_end_call.SelectedDate = DateTime.Now;
                 time_start.Text = "00:00";
                 time_finish.Text = "00:00";
             }
@@ -87,17 +70,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
                 user_select.Items.Add(combUser);
             }
 
-            // Выбираем первого пользователя по умолчанию для нового звонка
-            if (call_itm.id == 0 && user_select.Items.Count > 0)
-            {
-                user_select.SelectedIndex = 0;
-            }
 
-            // Выбираем категорию по умолчанию для нового звонка
-            if (call_itm.id == 0 && call_category_text.Items.Count > 0)
-            {
-                call_category_text.SelectedIndex = 0;
-            }
         }
 
         private void Click_Call_Redact(object sender, RoutedEventArgs e)
@@ -176,8 +149,6 @@ namespace Phonebook_Shashin.Pages.PagesUser
                     if (success)
                     {
                         MessageBox.Show("Успешное добавление звонка", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        // ОБНОВЛЯЕМ ДАННЫЕ И ИНТЕРФЕЙС
                         RefreshCallsData();
                     }
                     else
@@ -207,7 +178,7 @@ namespace Phonebook_Shashin.Pages.PagesUser
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
