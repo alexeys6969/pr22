@@ -28,17 +28,29 @@ namespace Phonebook_Shashin.Elements
         {
             InitializeComponent();
             user_loc = _user;
-            if(_user.fio_user != null)
+            try
             {
-                name_user.Content = _user.fio_user;
-                phone_user.Content = $"Номер: {_user.phone_num}";
-            }
+                if (_user?.fio_user != null)
+                {
+                    name_user.Content = _user.fio_user;
+                    phone_user.Content = $"Номер: {_user.phone_num}";
+                }
+                else
+                {
+                    name_user.Content = "Нет данных";
+                    phone_user.Content = "Номер: не указан";
+                }
 
-            DoubleAnimation opgrid = new DoubleAnimation();
-            opgrid.From = 0;
-            opgrid.To = 1;
-            opgrid.Duration = TimeSpan.FromSeconds(0.4);
-            border.BeginAnimation(StackPanel.OpacityProperty, opgrid);
+                DoubleAnimation opgrid = new DoubleAnimation();
+                opgrid.From = 0;
+                opgrid.To = 1;
+                opgrid.Duration = TimeSpan.FromSeconds(0.4);
+                border.BeginAnimation(StackPanel.OpacityProperty, opgrid);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка создания элемента пользователя: " + ex.Message);
+            }
         }
 
         private void Click_redact(object sender, RoutedEventArgs e)

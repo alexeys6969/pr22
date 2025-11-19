@@ -124,7 +124,8 @@ namespace Phonebook_Shashin.Pages
 
                             if (page_select == page_main.calls)
                             {
-                                var ff = new Pages.PagesUser.CallWin(new ClassModule.Call());
+                                // СОЗДАЕМ ПУСТОЙ ЗВОНОК С ID = 0
+                                var ff = new Pages.PagesUser.CallWin(new ClassModule.Call { id = 0 });
                                 parrent.Children.Add(new Elements.Add_itm(ff));
                             }
 

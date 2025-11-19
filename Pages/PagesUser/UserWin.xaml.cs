@@ -36,55 +36,85 @@ namespace Phonebook_Shashin.Pages.PagesUser
 
         private void Click_User_Redact(object sender, RoutedEventArgs e)
         {
-            if (!MainWindow.connect.ItsOnlyFIO(fio_user.Text))
+            // Валидация данных
+            if (string.IsNullOrWhiteSpace(fio_user.Text) || !MainWindow.connect.ItsOnlyFIO(fio_user.Text.Trim()))
             {
-                MessageBox.Show("Вы неправильно нвписали ФИО");
+                MessageBox.Show("Вы неправильно написали ФИО. Формат: Фамилия Имя Отчество", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (!MainWindow.connect.ItsNumber(phone_user.Text))
+            if (string.IsNullOrWhiteSpace(phone_user.Text) || !MainWindow.connect.ItsNumber(phone_user.Text.Trim()))
             {
-                MessageBox.Show("Вы неправильно нвписали номер телефона");
+                MessageBox.Show("Вы неправильно написали номер телефона", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if(addrec_user.Text.Trim() == "")
+            if (string.IsNullOrWhiteSpace(addrec_user.Text.Trim()))
             {
-                MessageBox.Show("Вы неправильно написали пасспортные данные");
+                MessageBox.Show("Вы неправильно написали паспортные данные", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if(user_loc == null || user_loc.fio_user == null)
-            {
-                int id = MainWindow.connect.SetLastId(ClassConnection.Connection.tabels.users);
-                string query = $"INSERT INTO [users]([Код], [phone_num], [fio_user], [pasport_data]) VALUES ({id.ToString()}, " + $"'{phone_user.Text}', '{fio_user.Text}','{addrec_user.Text}')";
+            // Очистка данных от лишних пробелов
+            string fio = fio_user.Text.Trim();
+            string phone = phone_user.Text.Trim();
+            string passport = addrec_user.Text.Trim();
 
-                var pc = MainWindow.connect.QueryAccess(query);
-                if(pc != null)
+            // ИСПРАВЛЕНИЕ: Правильная проверка на новый пользователь
+            bool isNewUser = user_loc == null || user_loc.id == 0;
+
+            if (isNewUser)
+            {
+                // Проверка на дубликат перед добавлением
+                if (MainWindow.connect.users.Any(u => u.phone_num == phone || u.fio_user == fio))
                 {
-                    MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
-                    MessageBox.Show("Успешное добавление клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
-                    MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
-                } else
-                {
-                    MessageBox.Show("Запрос на добавление клиента не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Пользователь с таким номером телефона или ФИО уже существует", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-            } else
-            {
-                string query = $"UPDATE [users] SET [phone_num] = '{phone_user.Text}', [fio_user] = '{fio_user.Text}', [pasport_data] = '{addrec_user.Text}' WHERE [Код] = {user_loc.id}";
-                var pc = MainWindow.connect.QueryAccess(query);
-                if (pc != null)
+
+                int id = MainWindow.connect.SetLastId(ClassConnection.Connection.tabels.users);
+                string query = $"INSERT INTO [users]([Код], [phone_num], [fio_user], [pasport_data]) VALUES ({id}, '{phone}', '{fio}', '{passport}')";
+
+                // ИСПРАВЛЕНИЕ: Используем ExecuteNonQuery вместо QueryAccess
+                bool success = MainWindow.connect.ExecuteNonQuery(query);
+                if (success)
                 {
+                    // Очищаем список перед загрузкой новых данных
                     MainWindow.connect.users.Clear();
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
-                    MessageBox.Show("Успешное изменение клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Успешное добавление клиента", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
                     MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
                 }
                 else
                 {
                     MessageBox.Show("Запрос на добавление клиента не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+            else
+            {
+                // Для существующего пользователя - проверяем дубликаты, исключая текущего пользователя
+                if (MainWindow.connect.users.Any(u => u.id != user_loc.id && (u.phone_num == phone || u.fio_user == fio)))
+                {
+                    MessageBox.Show("Пользователь с таким номером телефона или ФИО уже существует", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
 
+                string query = $"UPDATE [users] SET [phone_num] = '{phone}', [fio_user] = '{fio}', [pasport_data] = '{passport}' WHERE [Код] = {user_loc.id}";
+
+                // ИСПРАВЛЕНИЕ: Используем ExecuteNonQuery вместо QueryAccess
+                bool success = MainWindow.connect.ExecuteNonQuery(query);
+                if (success)
+                {
+                    // Очищаем список перед загрузкой новых данных
+                    MainWindow.connect.users.Clear();
+                    MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
+                    MessageBox.Show("Успешное изменение клиента", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
+                }
+                else
+                {
+                    MessageBox.Show("Запрос на изменение клиента не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 
@@ -92,38 +122,52 @@ namespace Phonebook_Shashin.Pages.PagesUser
         {
             try
             {
-                MainWindow.connect.users.Clear();
-                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
+                // Проверяем, есть ли у пользователя звонки
+                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
                 Call userFind = MainWindow.connect.calls.Find(x => x.user_id == user_loc.id);
-                if(userFind != null)
+
+                if (userFind != null)
                 {
-                    var click = MessageBox.Show("У данного клиента есть звонки, все равно удалить его?", "Вопрос", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                    if(click == MessageBoxResult.No)
+                    var result = MessageBox.Show("У данного клиента есть звонки, все равно удалить его?", "Вопрос", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.No)
                     {
+                        return;
+                    }
+
+                    // Сначала удаляем звонки пользователя
+                    string deleteCallsQuery = $"DELETE FROM [calls] WHERE [user_id] = {user_loc.id}";
+                    bool callsDeleted = MainWindow.connect.ExecuteNonQuery(deleteCallsQuery);
+
+                    if (!callsDeleted)
+                    {
+                        MessageBox.Show("Не удалось удалить звонки пользователя", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
                 }
 
-                string vs1 = $"DELETE FROM [calls] WHERE [user_id] = {user_loc.id}";
-                bool pc1 = MainWindow.connect.ExecuteNonQuery(vs1);
+                // Затем удаляем самого пользователя
+                string deleteUserQuery = $"DELETE FROM [users] WHERE [Код] = {user_loc.id}";
+                bool userDeleted = MainWindow.connect.ExecuteNonQuery(deleteUserQuery);
 
-                string vs = $"DELETE FROM [users] WHERE [Код] = {user_loc.id}";
-                bool pc = MainWindow.connect.ExecuteNonQuery(vs);
-
-                if (pc && pc1)
+                if (userDeleted)
                 {
+                    // Очищаем и перезагружаем данные
                     MainWindow.connect.users.Clear();
-                    MessageBox.Show("Успешное удаление клиента", "Успешное", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MainWindow.connect.calls.Clear();
                     MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
+                    MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
+
+                    MessageBox.Show("Успешное удаление клиента", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
                     MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.users);
-                } else
+                }
+                else
                 {
                     MessageBox.Show("Запрос на удаление клиента не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString());
+                MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
