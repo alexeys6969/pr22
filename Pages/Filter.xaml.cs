@@ -23,36 +23,36 @@ namespace Phonebook_Shashin.Pages
     /// </summary>
     public partial class Filter : Page
     {
-        Call call_itm;
+        Call call_itm1;
         public Filter(Call _call)
         {
             InitializeComponent();
-            call_itm = _call ?? new Call();
+            call_itm1 = _call ?? new Call();
 
             category_select.Items.Clear();
 
-            ComboBoxItem combItm = new ComboBoxItem();
-            combItm.Tag = 1;
-            combItm.Content = "Исходящий";
-            if (call_itm.category_call == 1) combItm.IsSelected = true;
-            category_select.Items.Add(combItm);
+            ComboBoxItem comb = new ComboBoxItem();
+            comb.Tag = 1;
+            comb.Content = "Исходящий";
+            if (call_itm1.category_call == 1) comb.IsSelected = true;
+            category_select.Items.Add(comb);
 
-            ComboBoxItem combItm1 = new ComboBoxItem();
-            combItm1.Tag = 2;
-            combItm1.Content = "Входящий";
-            if (call_itm.category_call == 2) combItm1.IsSelected = true;
-            category_select.Items.Add(combItm1);
+            ComboBoxItem comb1 = new ComboBoxItem();
+            comb1.Tag = 2;
+            comb1.Content = "Входящий";
+            if (call_itm1.category_call == 2) comb1.IsSelected = true;
+            category_select.Items.Add(comb1);
 
             num_select.Items.Clear();
             MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
 
-            foreach (User itm in MainWindow.connect.users)
+            foreach (User itm1 in MainWindow.connect.users)
             {
-                ComboBoxItem combUser = new ComboBoxItem();
-                combUser.Tag = itm.id;
-                combUser.Content = itm.phone_num;
-                if (call_itm.user_id == itm.id) combUser.IsSelected = true;
-                num_select.Items.Add(combUser);
+                ComboBoxItem combUser1 = new ComboBoxItem();
+                combUser1.Tag = itm1.id;
+                combUser1.Content =  $"{itm1.phone_num}({itm1.fio_user})";
+                if (call_itm1.user_id == itm1.id) combUser1.IsSelected = true;
+                num_select.Items.Add(combUser1);
             }
         }
 

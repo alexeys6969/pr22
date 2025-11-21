@@ -26,20 +26,37 @@ namespace Phonebook_Shashin.Pages.PagesUser
         public CallWin(Call _call)
         {
             InitializeComponent();
-            call_itm = _call ?? new Call();
+            call_itm = _call;
+            ComboBoxItem combItm = new ComboBoxItem();
+            combItm.Tag = 1;
+            combItm.Content = "Исходящий";
+            if (call_itm.category_call == 1) combItm.IsSelected = true;
+            call_category_text.Items.Add(combItm);
 
+            ComboBoxItem combItm1 = new ComboBoxItem();
+            combItm1.Tag = 2;
+            combItm1.Content = "Входящий";
+            if (call_itm.category_call == 2) combItm1.IsSelected = true;
+            call_category_text.Items.Add(combItm1);
+
+            // Заполняем комбобокс пользователей
+            user_select.Items.Clear();
+            MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
+
+            foreach (User itm in MainWindow.connect.users)
+            {
+                ComboBoxItem combUser = new ComboBoxItem();
+                combUser.Tag = itm.id;
+                combUser.Content = itm.fio_user;
+                if (call_itm.user_id == itm.id) combUser.IsSelected = true;
+                user_select.Items.Add(combUser);
+            }
             // УСТАНАВЛИВАЕМ ФОРМАТ ДАТЫ ЕДИНООБРАЗНО
             if (call_itm.id == 0) // Это новый звонок
             {
-                // Очищаем все поля
-                date_start_call.SelectedDate = null;
-                date_end_call.SelectedDate = null;
-                time_start.Text = "";
-                time_finish.Text = "";
-
-                // Очищаем выбранные элементы в комбобоксах
-                user_select.SelectedItem = null;
-                call_category_text.SelectedItem = null;
+                call_category_text.Items.Clear();
+                time_start.Text = "00:00";
+                time_finish.Text = "00:00";
             }
             else // Заполняем данные для редактирования существующего звонка
             {
@@ -60,37 +77,14 @@ namespace Phonebook_Shashin.Pages.PagesUser
                     }
                 }
 
-                // Заполняем комбобокс категорий
-                call_category_text.Items.Clear();
 
-                ComboBoxItem combItm = new ComboBoxItem();
-                combItm.Tag = 1;
-                combItm.Content = "Исходящий";
-                if (call_itm.category_call == 1) combItm.IsSelected = true;
-                call_category_text.Items.Add(combItm);
-
-                ComboBoxItem combItm1 = new ComboBoxItem();
-                combItm1.Tag = 2;
-                combItm1.Content = "Входящий";
-                if (call_itm.category_call == 2) combItm1.IsSelected = true;
-                call_category_text.Items.Add(combItm1);
-
-                // Заполняем комбобокс пользователей
-                user_select.Items.Clear();
-                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
-
-                foreach (User itm in MainWindow.connect.users)
-                {
-                    ComboBoxItem combUser = new ComboBoxItem();
-                    combUser.Tag = itm.id;
-                    combUser.Content = itm.fio_user;
-                    if (call_itm.user_id == itm.id) combUser.IsSelected = true;
-                    user_select.Items.Add(combUser);
-                }
-
-
+                MessageBox.Show($"Call category: {call_itm.category_call}");
+                MessageBox.Show($"Call user_id: {call_itm.user_id}");
+                MessageBox.Show($"Category combo items: {call_category_text.Items.Count}");
+                MessageBox.Show($"User combo items: {user_select.Items.Count}");
             }
         }
+
 
         private DateTime? ParseDateTime(string dateTimeStr)
         {
