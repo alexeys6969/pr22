@@ -54,7 +54,6 @@ namespace Phonebook_Shashin.Pages.PagesUser
             // УСТАНАВЛИВАЕМ ФОРМАТ ДАТЫ ЕДИНООБРАЗНО
             if (call_itm.id == 0) // Это новый звонок
             {
-                call_category_text.Items.Clear();
                 time_start.Text = "00:00";
                 time_finish.Text = "00:00";
             }
@@ -76,12 +75,6 @@ namespace Phonebook_Shashin.Pages.PagesUser
                         time_finish.Text = endDate.Value.ToString("HH:mm");
                     }
                 }
-
-
-                MessageBox.Show($"Call category: {call_itm.category_call}");
-                MessageBox.Show($"Call user_id: {call_itm.user_id}");
-                MessageBox.Show($"Category combo items: {call_category_text.Items.Count}");
-                MessageBox.Show($"User combo items: {user_select.Items.Count}");
             }
         }
 
