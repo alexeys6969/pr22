@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,49 +29,95 @@ namespace Phonebook_Shashin.Pages.PagesUser
             call_itm = _call ?? new Call();
 
             // УСТАНАВЛИВАЕМ ФОРМАТ ДАТЫ ЕДИНООБРАЗНО
-            if (call_itm.StartDateTime.HasValue && call_itm.EndDateTime.HasValue)
+            if (call_itm.id == 0) // Это новый звонок
             {
-                date_start_call.SelectedDate = call_itm.StartDateTime.Value.Date;
-                time_start.Text = call_itm.StartDateTime.Value.ToString("HH:mm");
+                // Очищаем все поля
+                date_start_call.SelectedDate = null;
+                date_end_call.SelectedDate = null;
+                time_start.Text = "";
+                time_finish.Text = "";
 
-                date_end_call.SelectedDate = call_itm.EndDateTime.Value.Date;
-                time_finish.Text = call_itm.EndDateTime.Value.ToString("HH:mm");
+                // Очищаем выбранные элементы в комбобоксах
+                user_select.SelectedItem = null;
+                call_category_text.SelectedItem = null;
             }
-            else
+            else // Заполняем данные для редактирования существующего звонка
             {
-                time_start.Text = "00:00";
-                time_finish.Text = "00:00";
+                // Заполняем данные только если звонок существует
+                if (call_itm.time_start != null && call_itm.time_end != null)
+                {
+                    // Используем метод парсинга из Call_itm
+                    DateTime? startDate = ParseDateTime(call_itm.time_start);
+                    DateTime? endDate = ParseDateTime(call_itm.time_end);
+
+                    if (startDate.HasValue && endDate.HasValue)
+                    {
+                        date_start_call.SelectedDate = startDate.Value.Date;
+                        time_start.Text = startDate.Value.ToString("HH:mm");
+
+                        date_end_call.SelectedDate = endDate.Value.Date;
+                        time_finish.Text = endDate.Value.ToString("HH:mm");
+                    }
+                }
+
+                // Заполняем комбобокс категорий
+                call_category_text.Items.Clear();
+
+                ComboBoxItem combItm = new ComboBoxItem();
+                combItm.Tag = 1;
+                combItm.Content = "Исходящий";
+                if (call_itm.category_call == 1) combItm.IsSelected = true;
+                call_category_text.Items.Add(combItm);
+
+                ComboBoxItem combItm1 = new ComboBoxItem();
+                combItm1.Tag = 2;
+                combItm1.Content = "Входящий";
+                if (call_itm.category_call == 2) combItm1.IsSelected = true;
+                call_category_text.Items.Add(combItm1);
+
+                // Заполняем комбобокс пользователей
+                user_select.Items.Clear();
+                MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
+
+                foreach (User itm in MainWindow.connect.users)
+                {
+                    ComboBoxItem combUser = new ComboBoxItem();
+                    combUser.Tag = itm.id;
+                    combUser.Content = itm.fio_user;
+                    if (call_itm.user_id == itm.id) combUser.IsSelected = true;
+                    user_select.Items.Add(combUser);
+                }
+
+
             }
+        }
 
-            // Заполняем комбобокс категорий
-            call_category_text.Items.Clear();
+        private DateTime? ParseDateTime(string dateTimeStr)
+        {
+            if (string.IsNullOrEmpty(dateTimeStr)) return null;
 
-            ComboBoxItem combItm = new ComboBoxItem();
-            combItm.Tag = 1;
-            combItm.Content = "Исходящий";
-            if (call_itm.category_call == 1) combItm.IsSelected = true;
-            call_category_text.Items.Add(combItm);
+            // Пробуем разные форматы
+            string[] formats = {
+        "MM.dd.yyyy HH:mm",
+        "dd.MM.yyyy HH:mm",
+        "yyyy-MM-dd HH:mm",
+        "MM/dd/yyyy HH:mm",
+        "dd/MM/yyyy HH:mm"
+    };
 
-            ComboBoxItem combItm1 = new ComboBoxItem();
-            combItm1.Tag = 2;
-            combItm1.Content = "Входящий";
-            if (call_itm.category_call == 2) combItm1.IsSelected = true;
-            call_category_text.Items.Add(combItm1);
-
-            // Заполняем комбобокс пользователей
-            user_select.Items.Clear();
-            MainWindow.connect.LoadData(ClassConnection.Connection.tabels.users);
-
-            foreach (User itm in MainWindow.connect.users)
+            if (DateTime.TryParseExact(dateTimeStr, formats, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime result))
             {
-                ComboBoxItem combUser = new ComboBoxItem();
-                combUser.Tag = itm.id;
-                combUser.Content = itm.fio_user;
-                if (call_itm.user_id == itm.id) combUser.IsSelected = true;
-                user_select.Items.Add(combUser);
+                return result;
             }
 
+            // Пробуем стандартный парсинг
+            if (DateTime.TryParse(dateTimeStr, out result))
+            {
+                return result;
+            }
 
+            return null;
         }
 
         private void Click_Call_Redact(object sender, RoutedEventArgs e)
@@ -184,11 +231,9 @@ namespace Phonebook_Shashin.Pages.PagesUser
 
         private void RefreshCallsData()
         {
-            // Обновляем данные
             MainWindow.connect.calls.Clear();
             MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
 
-            // Возвращаемся на главную страницу и обновляем список звонков
             if (MainWindow.main != null)
             {
                 MainWindow.main.Anim_Move(
@@ -230,23 +275,22 @@ namespace Phonebook_Shashin.Pages.PagesUser
 
         private void Click_Remove_Call_Redact(object sender, RoutedEventArgs e)
         {
-try
-    {
-        string vs = $"DELETE FROM [calls] WHERE [Код] = {call_itm.id}";
-        // ИСПРАВЬ: используй QueryAccess
-        var pc = MainWindow.connect.QueryAccess(vs);
-        if (pc != null)
-        {
+            try
+            {
+            string vs = $"DELETE FROM [calls] WHERE [Код] = {call_itm.id}";
+            var pc = MainWindow.connect.QueryAccess(vs);
+            if (pc != null)
+            {
             MessageBox.Show("Успешное удаление звонка", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
             MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
             MainWindow.main.Anim_Move(MainWindow.main.frame_main, MainWindow.main.scroll_main, null, null, Main.page_main.calls);
-        }
-        else MessageBox.Show("Запрос на удаление звонка не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show(ex.Message.ToString());
-    }
+            }
+            else MessageBox.Show("Запрос на удаление звонка не был обработан", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+            MessageBox.Show(ex.Message.ToString());
+            }
         }
     }
 }

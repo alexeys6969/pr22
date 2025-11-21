@@ -112,8 +112,10 @@ namespace Phonebook_Shashin.Pages
                         {
                             MainWindow.connect.calls.Clear();
                             MainWindow.connect.LoadData(ClassConnection.Connection.tabels.calls);
-
-                            foreach (Call call_item in MainWindow.connect.calls)
+                            var filter = new Pages.Filter(new ClassModule.Call { id = 0 });
+                            parrent.Children.Add(new Elements.FilterItm(filter));
+                            var callsToShow = MainWindow.connect.filteredCalls.Count > 0 ? MainWindow.connect.filteredCalls : MainWindow.connect.calls;
+                            foreach (Call call_item in callsToShow)
                             {
                                 if (page_select == page_main.calls)
                                 {
@@ -121,6 +123,7 @@ namespace Phonebook_Shashin.Pages
                                     await Task.Delay(90);
                                 }
                             }
+
 
                             if (page_select == page_main.calls)
                             {

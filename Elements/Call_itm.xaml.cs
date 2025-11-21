@@ -72,6 +72,7 @@ namespace Phonebook_Shashin.Elements
                     new BitmapImage(new Uri(@"/img/out.png", UriKind.RelativeOrAbsolute)) :
                     new BitmapImage(new Uri(@"/img/in.png", UriKind.RelativeOrAbsolute));
 
+
                 DoubleAnimation op = new DoubleAnimation();
                 op.From = 0;
                 op.To = 1;
