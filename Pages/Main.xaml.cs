@@ -115,19 +115,39 @@ namespace Phonebook_Shashin.Pages
                             var filter = new Pages.Filter(new ClassModule.Call { id = 0 });
                             parrent.Children.Add(new Elements.FilterItm(filter));
                             var callsToShow = MainWindow.connect.filteredCalls.Count > 0 ? MainWindow.connect.filteredCalls : MainWindow.connect.calls;
-                            foreach (Call call_item in callsToShow)
+                            if (MainWindow.connect.filteredCalls.Count > 0)
                             {
-                                if (page_select == page_main.calls)
+                                parrent.Children.Clear();
+                                var filt = new Pages.Filter(new ClassModule.Call { id = 0 });
+                                parrent.Children.Add(new Elements.FilterItm(filt));
+
+                                foreach (Call call_item in callsToShow)
                                 {
-                                    parrent.Children.Add(new Elements.Call_itm(call_item));
-                                    await Task.Delay(90);
+                                    if (page_select == page_main.calls)
+                                    {
+                                        parrent.Children.Add(new Elements.Call_itm(call_item));
+                                        await Task.Delay(90);
+                                    }
+                                }
+                                parrent.Children.Add(new Elements.Cancel_itm());
+                                var ff = new Pages.PagesUser.CallWin(new ClassModule.Call { id = 0 });
+                                parrent.Children.Remove(new Elements.Add_itm(ff));
+                            } else
+                            {
+                                foreach (Call call_item in callsToShow)
+                                {
+                                    if (page_select == page_main.calls)
+                                    {
+                                        parrent.Children.Add(new Elements.Call_itm(call_item));
+                                        await Task.Delay(90);
+                                    }
                                 }
                             }
 
 
+
                             if (page_select == page_main.calls)
                             {
-                                // СОЗДАЕМ ПУСТОЙ ЗВОНОК С ID = 0
                                 var ff = new Pages.PagesUser.CallWin(new ClassModule.Call { id = 0 });
                                 parrent.Children.Add(new Elements.Add_itm(ff));
                             }

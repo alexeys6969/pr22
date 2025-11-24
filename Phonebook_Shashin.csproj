@@ -66,6 +66,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Elements\Cancel_itm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Elements\FilterItm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -87,6 +91,9 @@
     </Compile>
     <Compile Include="Elements\Call_itm.xaml.cs">
       <DependentUpon>Call_itm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Elements\Cancel_itm.xaml.cs">
+      <DependentUpon>Cancel_itm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Elements\FilterItm.xaml.cs">
       <DependentUpon>FilterItm.xaml</DependentUpon>
